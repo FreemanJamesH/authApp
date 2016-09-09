@@ -1,5 +1,7 @@
 var express = require('express');
 var router = express.Router();
+const config = require('../knexfile.js')[process.env.DATABASE_ENV]
+const knex = require('knex')(config)
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
