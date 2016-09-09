@@ -10,7 +10,12 @@ router.get('/', function(req, res, next) {
 
 router.post('/signup', function(req, res, next) {
     res.cookie('isLoggedIn', true)
-    res.redirect('/')
+    let username = req.body.username;
+    let hashed_pw = req.body.password
+    knex('users').insert({username : username, hashed_pw : hashed_pw})
+    .then(function(){
+      res.redirect('/')
+    })
 })
 
 router.post('/logout', function(req, res, next){
