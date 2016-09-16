@@ -40,6 +40,10 @@ router.post('/logout', function(req, res, next) {
     res.redirect('/')
 })
 
+router.get('/login', function(req, res, next){
+    res.render('login')
+})
+
 router.get('/profile', function(req, res, next) {
     console.log('Reading cookies...', res.cookies);
     if (req.cookies.isLoggedIn) {
