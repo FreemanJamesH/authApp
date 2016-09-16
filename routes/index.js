@@ -10,32 +10,41 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/signup', function(req, res, next) {
-    res.cookie('isLoggedIn', true)
     let username = req.body.username;
     knex('users').whereRaw('lower(username) = ?', req.body.username.toLowerCase())
         .count()
         .first() //not sure if/why this necessary but keeping it for now
         .then(function(result) {
             if (result.count === "0") {
+                res.cookie('isLoggedIn', true)
+                res.cookie('username', username)
                 let hashed_pw = bcrypt.hashSync(req.body.password, 8)
-                console.log('user: ', username, hashed_pw)
                 knex('users').insert({
                     username: username,
                     hashed_pw: hashed_pw
                 }).returning('*').then(function(results){
-                    console.log(results)
                 }).then(function() {
                     res.redirect('/profile')
                 })
             } else {
-                console.log('already there');
                 res.redirect('/')
             }
         })
 })
 
+router.post('/login', function(req, res, next){
+    let username = req.body.username
+    knex('users').where('username', username)
+    .first()
+    .then(function(results){
+        let hashedPW  = results.hashed_pw
+        let inputPW = req.body.password
+        let bcryptCompareResult = bcrypt.compareSync(req.body.password, results.hashed_pw)
+        res.redirect('/profile')
+    })
+})
+
 router.post('/logout', function(req, res, next) {
-    console.log('Posted to logout')
     res.clearCookie('isLoggedIn')
     res.redirect('/')
 })
@@ -44,11 +53,11 @@ router.get('/login', function(req, res, next){
     res.render('login')
 })
 
+
 router.get('/profile', function(req, res, next) {
-    console.log('Reading cookies...', res.cookies);
     if (req.cookies.isLoggedIn) {
         res.render('profile', {
-            user: 'Tom Hardcody'
+            user: req.cookies.username
         })
     } else {
         res.redirect('/')
