@@ -1,15 +1,18 @@
-<a href="/profile">Profile</a>
-
 <div class="row">
     <div class="col-md-8 col-md-offset-2 text-center">
         <h1 id="title">Authorization station</h1>
         <hr>
     </div>
+    {{#if user}}
     <div class="col-md-2">
+        <p>
+            Welcome, {{user}}! <a href="/profile">My profile.</a>
+        </p>
         <form class="" action="/logout" method="post">
             <button type="submit">Logout</button>
         </form>
     </div>
+    {{/if}}
 </div>
 <div class="row">
     <div class="jumbotron col-md-8 col-md-offset-2">
